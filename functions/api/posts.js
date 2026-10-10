@@ -1,5 +1,6 @@
 import { isAuthenticated } from "./auth.js";
 import { sendToSocial } from "./social.js";
+import { ensureSchema, json, getSiteUrl, getSettingsMap } from "./db.js";
 
 function slugify(title) {
   return (title || "post").trim().toLowerCase()
@@ -7,36 +8,10 @@ function slugify(title) {
     .replace(/\s+/g, "-").replace(/-+/g, "-").slice(0, 80) + "-" + Date.now().toString(36);
 }
 
-async function ensureTable(db) {
-  await db.prepare(`CREATE TABLE IF NOT EXISTS posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    slug TEXT NOT NULL UNIQUE,
-    excerpt TEXT DEFAULT '',
-    content TEXT DEFAULT '',
-    category TEXT DEFAULT 'عمومی',
-    image_url TEXT DEFAULT '',
-    author TEXT DEFAULT 'کافه بازنشستگی',
-    status TEXT DEFAULT 'draft',
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    published_at TEXT
-  )`).run();
-}
-
-function json(data, status = 200) {
-  return Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
-}
-
-function getSiteUrl(request) {
-  const url = new URL(request.url);
-  return `${url.protocol}//${url.host}`;
-}
-
 export async function onRequestGet(context) {
   const db = context.env.DB;
   if (!db) return json({ error: "Binding با نام DB پیدا نشد." }, 500);
-  await ensureTable(db);
+  await ensureSchema(db);
   const url = new URL(context.request.url);
   const id = url.searchParams.get("id");
   if (id) {
@@ -49,7 +24,7 @@ export async function onRequestGet(context) {
   }
   const admin = await isAuthenticated(context.request, context.env);
   const category = url.searchParams.get("category");
-  const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 100);
+  const limit = Math.min(parseInt(url.searchParams.get("limit") || "50", 10) || 50, 100);
   let sql = "SELECT * FROM posts ";
   const binds = [];
   if (admin) sql += "WHERE 1=1 ";
@@ -69,7 +44,7 @@ export async function onRequestPost(context) {
     return json({ error: "نیاز به ورود مدیر دارد." }, 401);
   }
   const db = context.env.DB;
-  await ensureTable(db);
+  await ensureSchema(db);
   let b;
   try {
     b = await context.request.json();
@@ -102,13 +77,15 @@ export async function onRequestPost(context) {
   const id = r.meta?.last_row_id;
   let social = [];
   if (status === "published" && id) {
+    const settings = await getSettingsMap(db);
     const post = {
       id,
       title: b.title.trim(),
       excerpt: b.excerpt || "",
-      category: b.category || "عمومی"
+      category: b.category || "عمومی",
+      image_url: b.image_url || ""
     };
-    social = await sendToSocial(post, context.env, getSiteUrl(context.request));
+    social = await sendToSocial(post, context.env, getSiteUrl(context.request), settings);
   }
   return json({ ok: true, id, social }, 201);
 }
@@ -118,7 +95,7 @@ export async function onRequestPut(context) {
     return json({ error: "نیاز به ورود مدیر دارد." }, 401);
   }
   const db = context.env.DB;
-  await ensureTable(db);
+  await ensureSchema(db);
   const id = new URL(context.request.url).searchParams.get("id");
   if (!id) return json({ error: "شناسه مطلب لازم است." }, 400);
   let b;
@@ -133,15 +110,17 @@ export async function onRequestPut(context) {
   const status = b.status === "published" ? "published" : "draft";
   const wasDraft = old.status !== "published";
   const publishedAt = status === "published" ? (old.published_at || now) : null;
+  const title = b.title?.trim() || old.title;
+  const imageUrl = b.image_url ?? old.image_url;
   await db.prepare(
     `UPDATE posts SET title=?,excerpt=?,content=?,category=?,image_url=?,author=?,status=?,updated_at=?,published_at=? WHERE id=?`
   )
     .bind(
-      b.title?.trim() || old.title,
+      title,
       b.excerpt ?? old.excerpt,
       b.content ?? old.content,
       b.category || old.category,
-      b.image_url ?? old.image_url,
+      imageUrl,
       b.author || old.author,
       status,
       now,
@@ -151,15 +130,16 @@ export async function onRequestPut(context) {
     .run();
 
   let social = [];
-  // فقط وقتی برای اولین بار منتشر می‌شود، به شبکه‌ها بفرست
   if (status === "published" && wasDraft) {
+    const settings = await getSettingsMap(db);
     const post = {
       id,
-      title: b.title?.trim() || old.title,
+      title,
       excerpt: b.excerpt ?? old.excerpt,
-      category: b.category || old.category
+      category: b.category || old.category,
+      image_url: imageUrl
     };
-    social = await sendToSocial(post, context.env, getSiteUrl(context.request));
+    social = await sendToSocial(post, context.env, getSiteUrl(context.request), settings);
   }
   return json({ ok: true, social });
 }

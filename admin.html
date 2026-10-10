@@ -1,44 +1,403 @@
-<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>پنل مدیریت | کافه بازنشستگی</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body class="admin-page">
-<header><div class="container head"><a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span><strong>کافه بازنشستگی</strong><small>پنل مدیریت محتوا</small></span></a><div class="actions"><a class="btn secondary" href="index.html">مشاهده سایت</a></div></div></header>
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>پنل مدیریت | کافه بازنشستگی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.admin-tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-family:inherit;font-weight:700;color:var(--ink)}
+.admin-tabs button.active{background:var(--p);color:#fff;border-color:var(--p)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:14px}
+.media-card{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+.media-card img{width:100%;height:100px;object-fit:cover;border-radius:8px;background:#eef4f3}
+.preview-img{max-width:220px;max-height:140px;border-radius:10px;margin-top:8px;display:none}
+.social-result{font-size:.8rem;margin-top:8px;color:var(--muted)}
+</style>
+</head>
+<body class="admin-page">
+<header>
+  <div class="container head">
+    <a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span><strong>کافه بازنشستگی</strong><small>پنل مدیریت محتوا</small></span></a>
+    <div class="actions"><a class="btn secondary" href="index.html">مشاهده سایت</a></div>
+  </div>
+</header>
 <main class="admin"><div class="container">
-<section id="login-box" class="panel auth-box"><span class="eyebrow">مدیریت سایت</span><h1>ورود به پنل انتشار</h1><p>برای مدیریت خبرها و مطالب، رمز مدیر را وارد کنید.</p><form id="login-form"><div class="field"><label>رمز عبور مدیر</label><input id="login-password" type="password" autocomplete="current-password" required></div><button class="btn primary" type="submit">ورود به پنل</button><div id="login-error" class="error"></div></form></section>
+<section id="login-box" class="panel auth-box">
+  <span class="eyebrow">مدیریت سایت</span>
+  <h1>ورود به پنل انتشار</h1>
+  <p>برای مدیریت خبرها، صفحات، تصاویر و ارسال به شبکه‌های اجتماعی وارد شوید.</p>
+  <form id="login-form">
+    <div class="field"><label>رمز عبور مدیر</label><input id="login-password" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary" type="submit">ورود به پنل</button>
+    <div id="login-error" class="error"></div>
+  </form>
+</section>
+
 <section id="dashboard" hidden>
-<div class="admin-top"><div><span class="eyebrow">اتاق خبر</span><h1>مدیریت محتوا</h1><p class="muted">مطلب را بنویسید، تصویر را معرفی کنید و با یک کلیک منتشر کنید.</p></div><div class="buttons"><button id="new-post" class="btn secondary">+ مطلب جدید</button><button id="logout" class="btn secondary">خروج</button></div></div>
-<div class="admin-grid">
-<section class="panel"><h2 id="form-title">مطلب جدید</h2><form id="post-form">
-<input type="hidden" id="post-id">
-<div class="field"><label>عنوان مطلب *</label><input id="title" required placeholder="عنوان خبر یا مقاله"></div>
-<div class="two"><div class="field"><label>دسته‌بندی</label><select id="category"><option>خبر</option><option>اقتصاد</option><option>سلامت</option><option>فناوری</option><option>زندگی</option><option>تجربه‌ها</option><option>فرهنگ</option><option>خانواده</option><option>عمومی</option></select></div><div class="field"><label>نویسنده</label><input id="author" value="کافه بازنشستگی"></div></div>
-<div class="field"><label>خلاصه / لید</label><textarea id="excerpt" rows="4" placeholder="خلاصه‌ای کوتاه برای صفحه اصلی و شبکه‌های اجتماعی"></textarea></div>
-<div class="field"><label>متن کامل مطلب</label><textarea id="content" rows="14" placeholder="متن کامل مطلب را اینجا وارد کنید..."></textarea></div>
-<div class="field"><label>آدرس تصویر اصلی</label><input id="image_url" placeholder="https://.../image.jpg"><small class="hint">در این نسخه تصویر با URL ذخیره می‌شود؛ در مرحله بعد می‌توانیم آپلود مستقیم تصویر را با R2 اضافه کنیم.</small></div>
-<div class="buttons"><button class="btn primary" type="submit" data-status="published">ذخیره و انتشار</button><button class="btn secondary" type="button" id="save-draft">ذخیره پیش‌نویس</button></div>
-<div id="save-message" class="success"></div></form></section>
-<aside class="panel"><div class="list-head"><h2>مطالب</h2><button id="refresh" class="btn secondary">بازخوانی</button></div><div id="posts-list" class="posts-list"></div></aside>
-</div></section></div></main>
+  <div class="admin-top">
+    <div>
+      <span class="eyebrow">اتاق خبر</span>
+      <h1>مدیریت کامل سایت</h1>
+      <p class="muted">مطالب، صفحات ثابت، تصاویر و تنظیمات بله/تلگرام</p>
+    </div>
+    <div class="buttons"><button id="logout" class="btn secondary" type="button">خروج</button></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button type="button" class="active" data-tab="posts">مطالب</button>
+    <button type="button" data-tab="pages">صفحات</button>
+    <button type="button" data-tab="media">تصاویر</button>
+    <button type="button" data-tab="social">شبکه‌های اجتماعی</button>
+  </div>
+
+  <!-- مطالب -->
+  <div class="tab-panel active" id="tab-posts">
+    <div class="admin-grid">
+      <section class="panel">
+        <h2 id="form-title">مطلب جدید</h2>
+        <form id="post-form">
+          <input type="hidden" id="post-id">
+          <div class="field"><label>عنوان مطلب *</label><input id="title" required placeholder="عنوان خبر یا مقاله"></div>
+          <div class="two">
+            <div class="field"><label>دسته‌بندی</label>
+              <select id="category">
+                <option>خبر</option><option>اقتصاد</option><option>سلامت</option><option>فناوری</option>
+                <option>زندگی</option><option>تجربه‌ها</option><option>فرهنگ</option><option>خانواده</option><option>عمومی</option>
+              </select>
+            </div>
+            <div class="field"><label>نویسنده</label><input id="author" value="کافه بازنشستگی"></div>
+          </div>
+          <div class="field"><label>خلاصه / لید</label><textarea id="excerpt" rows="3" placeholder="برای صفحه اصلی و شبکه‌های اجتماعی"></textarea></div>
+          <div class="field"><label>متن کامل</label><textarea id="content" rows="12" placeholder="متن کامل مطلب..."></textarea></div>
+          <div class="field">
+            <label>تصویر اصلی</label>
+            <input id="image_url" placeholder="آدرس تصویر یا از دکمه آپلود استفاده کنید">
+            <div class="buttons" style="margin-top:8px">
+              <label class="btn secondary" style="cursor:pointer">انتخاب فایل
+                <input type="file" id="post-image-file" accept="image/*" hidden>
+              </label>
+              <button type="button" class="btn secondary" id="upload-post-image">آپلود تصویر</button>
+            </div>
+            <img id="post-image-preview" class="preview-img" alt="پیش‌نمایش">
+            <small class="hint">می‌توانید فایل را آپلود کنید (حداکثر حدود ۱۵۰KB) یا لینک ImgBB بگذارید.</small>
+          </div>
+          <div class="buttons">
+            <button class="btn primary" type="submit">ذخیره و انتشار</button>
+            <button class="btn secondary" type="button" id="save-draft">ذخیره پیش‌نویس</button>
+            <button class="btn secondary" type="button" id="new-post">+ مطلب جدید</button>
+          </div>
+          <div id="save-message" class="success"></div>
+          <div id="social-message" class="social-result"></div>
+        </form>
+      </section>
+      <aside class="panel">
+        <div class="list-head"><h2>مطالب</h2><button id="refresh" class="btn secondary" type="button">بازخوانی</button></div>
+        <div id="posts-list" class="posts-list"></div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- صفحات -->
+  <div class="tab-panel" id="tab-pages">
+    <div class="admin-grid">
+      <section class="panel">
+        <h2 id="page-form-title">صفحه جدید</h2>
+        <form id="page-form">
+          <input type="hidden" id="page-id">
+          <div class="field"><label>عنوان *</label><input id="page-title" required></div>
+          <div class="field"><label>اسلاگ (آدرس لاتین/کوتاه)</label><input id="page-slug" placeholder="about-us"></div>
+          <div class="field"><label>محتوا</label><textarea id="page-content" rows="12"></textarea></div>
+          <div class="field"><label>وضعیت</label>
+            <select id="page-status"><option value="published">منتشر</option><option value="draft">پیش‌نویس</option></select>
+          </div>
+          <div class="buttons">
+            <button class="btn primary" type="submit">ذخیره صفحه</button>
+            <button class="btn secondary" type="button" id="new-page">صفحه جدید</button>
+          </div>
+          <div id="page-save-message" class="success"></div>
+        </form>
+      </section>
+      <aside class="panel">
+        <div class="list-head"><h2>صفحات</h2><button id="refresh-pages" class="btn secondary" type="button">بازخوانی</button></div>
+        <div id="pages-list" class="posts-list"></div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- تصاویر -->
+  <div class="tab-panel" id="tab-media">
+    <section class="panel">
+      <h2>کتابخانه تصاویر</h2>
+      <p class="muted">تصاویر در دیتابیس رایگان Cloudflare ذخیره می‌شوند. برای عکس‌های بزرگ از ImgBB استفاده کنید و فقط لینک را در مطلب بگذارید.</p>
+      <div class="field">
+        <label>آپلود تصویر جدید</label>
+        <input type="file" id="media-file" accept="image/*">
+      </div>
+      <button class="btn primary" type="button" id="upload-media">آپلود</button>
+      <div id="media-message" class="success"></div>
+      <div id="media-grid" class="media-grid"></div>
+    </section>
+  </div>
+
+  <!-- شبکه‌های اجتماعی -->
+  <div class="tab-panel" id="tab-social">
+    <section class="panel">
+      <h2>ارسال خودکار به شبکه‌ها</h2>
+      <p class="muted">با انتشار مطلب، عنوان و خلاصه به کانال‌ها ارسال می‌شود. اینستاگرام API رسمی رایگان ندارد؛ لینک مطلب را دستی در اینستا بگذارید.</p>
+      <form id="settings-form">
+        <div class="two">
+          <div class="field"><label>توکن ربات بله</label><input id="bale_bot_token" placeholder="از BotFather بله"></div>
+          <div class="field"><label>Chat ID کانال بله</label><input id="bale_chat_id" placeholder="-100..."></div>
+        </div>
+        <div class="two">
+          <div class="field"><label>توکن ربات تلگرام</label><input id="telegram_bot_token" placeholder="اختیاری"></div>
+          <div class="field"><label>Chat ID کانال تلگرام</label><input id="telegram_chat_id" placeholder="اختیاری"></div>
+        </div>
+        <div class="field"><label>یادداشت ایتا / اینستاگرام</label><textarea id="instagram_note" rows="3" placeholder="مثلاً: کانال ایتا @... — اینستا @..."></textarea></div>
+        <button class="btn primary" type="submit">ذخیره تنظیمات</button>
+        <div id="settings-message" class="success"></div>
+      </form>
+      <hr style="margin:24px 0;border:none;border-top:1px solid var(--line)">
+      <h3>راهنمای بله</h3>
+      <ol class="muted" style="line-height:1.9">
+        <li>در بله به BotFather پیام بدهید و ربات بسازید؛ توکن را کپی کنید.</li>
+        <li>ربات را ادمین کانال کنید.</li>
+        <li>یک پیام در کانال بفرستید، سپس به <code>https://tapi.bale.ai/botTOKEN/getUpdates</code> بروید و chat.id را بردارید.</li>
+      </ol>
+    </section>
+  </div>
+</section>
+</div></main>
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-let editingId=null;
+let editingId=null, editingPageId=null, pendingDataUrl=null;
 const faDate=s=>s?new Date(s).toLocaleDateString('fa-IR'):'—';
 function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-async function auth(){const r=await fetch('/api/auth',{cache:'no-store'});return (await r.json()).authenticated}
-async function boot(){if(await auth()){showDash();loadPosts()}else{$('#login-box').hidden=false}}
+
+async function auth(){
+  try{const r=await fetch('/api/auth',{cache:'no-store'}); if(!r.ok)return false; return !!(await r.json()).authenticated}
+  catch{return false}
+}
+async function boot(){
+  if(await auth()){showDash();loadPosts();loadPages();loadMedia();loadSettings()}
+  else{$('#login-box').hidden=false}
+}
 function showDash(){$('#login-box').hidden=true;$('#dashboard').hidden=false}
-function resetForm(){editingId=null;$('#post-id').value='';$('#form-title').textContent='مطلب جدید';$('#post-form').reset();$('#author').value='کافه بازنشستگی';$('#save-message').textContent=''}
+
+$$('.admin-tabs button').forEach(btn=>{
+  btn.onclick=()=>{
+    $$('.admin-tabs button').forEach(b=>b.classList.remove('active'));
+    $$('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    $('#tab-'+btn.dataset.tab).classList.add('active');
+  };
+});
+
+function resetForm(){
+  editingId=null; pendingDataUrl=null;
+  $('#post-id').value=''; $('#form-title').textContent='مطلب جدید';
+  $('#post-form').reset(); $('#author').value='کافه بازنشستگی';
+  $('#save-message').textContent=''; $('#social-message').textContent='';
+  const prev=$('#post-image-preview'); prev.style.display='none'; prev.src='';
+}
 async function loadPosts(){
- const r=await fetch('/api/posts?admin=1&limit=100',{cache:'no-store'}); if(r.status===401){location.reload();return}
- const data=await r.json(); const box=$('#posts-list'); box.innerHTML='';
- (data.posts||[]).forEach(p=>{const el=document.createElement('div');el.className='post-row';el.innerHTML=`<div><span class="status ${p.status}">${p.status==='published'?'منتشرشده':'پیش‌نویس'}</span><strong>${esc(p.title)}</strong><small>${esc(p.category)} · ${faDate(p.updated_at)}</small></div><div class="row-actions"><button data-edit="${p.id}">ویرایش</button><button data-delete="${p.id}">حذف</button></div>`;box.appendChild(el)})
- $$('#posts-list [data-edit]').forEach(b=>b.onclick=()=>editPost(b.dataset.edit));
- $$('#posts-list [data-delete]').forEach(b=>b.onclick=()=>deletePost(b.dataset.delete));
+  try{
+    const r=await fetch('/api/posts?admin=1&limit=100',{cache:'no-store'});
+    if(r.status===401){location.reload();return}
+    const data=await r.json(); const box=$('#posts-list'); box.innerHTML='';
+    (data.posts||[]).forEach(p=>{
+      const el=document.createElement('div'); el.className='post-row';
+      el.innerHTML=`<div><span class="status ${p.status}">${p.status==='published'?'منتشرشده':'پیش‌نویس'}</span><strong>${esc(p.title)}</strong><small>${esc(p.category)} · ${faDate(p.updated_at)}</small></div><div class="row-actions"><button type="button" data-edit="${p.id}">ویرایش</button><button type="button" data-delete="${p.id}">حذف</button></div>`;
+      box.appendChild(el);
+    });
+    $$('#posts-list [data-edit]').forEach(b=>b.onclick=()=>editPost(b.dataset.edit));
+    $$('#posts-list [data-delete]').forEach(b=>b.onclick=()=>deletePost(b.dataset.delete));
+  }catch(e){$('#posts-list').innerHTML='<p class="error">خطا در دریافت مطالب. اگر در ایران هستید با VPN امتحان کنید.</p>'}
 }
-async function editPost(id){const r=await fetch('/api/posts?id='+encodeURIComponent(id));const d=await r.json();const p=d.post;if(!p)return;editingId=id;$('#form-title').textContent='ویرایش مطلب';$('#title').value=p.title;$('#category').value=p.category;$('#author').value=p.author;$('#excerpt').value=p.excerpt;$('#content').value=p.content;$('#image_url').value=p.image_url||'';$('#save-message').textContent='';scrollTo({top:0,behavior:'smooth'})}
-async function deletePost(id){if(!confirm('این مطلب حذف شود؟'))return;const r=await fetch('/api/posts?id='+id,{method:'DELETE'});if(r.ok)loadPosts();else alert((await r.json()).error||'خطا')}
-async function save(status){const payload={title:$('#title').value,category:$('#category').value,author:$('#author').value,excerpt:$('#excerpt').value,content:$('#content').value,image_url:$('#image_url').value,status};
- const url=editingId?'/api/posts?id='+editingId:'/api/posts';const r=await fetch(url,{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok){alert(d.error||'خطا در ذخیره');return}
- $('#save-message').textContent=status==='published'?'مطلب با موفقیت منتشر شد.':'پیش‌نویس ذخیره شد.';loadPosts();if(!editingId)resetForm();
+async function editPost(id){
+  const r=await fetch('/api/posts?id='+encodeURIComponent(id)); const d=await r.json(); const p=d.post; if(!p)return;
+  editingId=id; $('#form-title').textContent='ویرایش مطلب';
+  $('#title').value=p.title; $('#category').value=p.category; $('#author').value=p.author;
+  $('#excerpt').value=p.excerpt; $('#content').value=p.content; $('#image_url').value=p.image_url||'';
+  $('#save-message').textContent=''; $('#social-message').textContent='';
+  if(p.image_url){const prev=$('#post-image-preview'); prev.src=p.image_url; prev.style.display='block'}
+  scrollTo({top:0,behavior:'smooth'});
 }
-$('#login-form').onsubmit=async e=>{e.preventDefault();const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('#login-password').value})});if(r.ok){showDash();loadPosts()}else $('#login-error').textContent=(await r.json()).error||'ورود ناموفق بود.'}
-$('#post-form').onsubmit=e=>{e.preventDefault();save('published')};$('#save-draft').onclick=()=>save('draft');$('#new-post').onclick=resetForm;$('#refresh').onclick=loadPosts;
-$('#logout').onclick=async()=>{await fetch('/api/auth',{method:'DELETE'});location.reload()};boot();
-</script></body></html>
+async function deletePost(id){
+  if(!confirm('این مطلب حذف شود؟'))return;
+  const r=await fetch('/api/posts?id='+id,{method:'DELETE'});
+  if(r.ok)loadPosts(); else alert((await r.json()).error||'خطا');
+}
+async function save(status){
+  const payload={
+    title:$('#title').value, category:$('#category').value, author:$('#author').value,
+    excerpt:$('#excerpt').value, content:$('#content').value, image_url:$('#image_url').value, status
+  };
+  const url=editingId?'/api/posts?id='+editingId:'/api/posts';
+  const r=await fetch(url,{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const d=await r.json();
+  if(!r.ok){alert(d.error||'خطا در ذخیره');return}
+  $('#save-message').textContent=status==='published'?'مطلب با موفقیت منتشر شد.':'پیش‌نویس ذخیره شد.';
+  if(d.social&&d.social.length){
+    $('#social-message').textContent='ارسال شبکه‌ها: '+d.social.map(s=>s.platform+(s.ok?' ✓':' ✗ '+(s.error||''))).join(' | ');
+  } else if(status==='published'){
+    $('#social-message').textContent='برای ارسال خودکار، در تب شبکه‌های اجتماعی توکن بله را ذخیره کنید.';
+  }
+  loadPosts(); if(!editingId)resetForm();
+}
+
+function readFileAsDataUrl(file, maxSide=1200, quality=0.72){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      let w=img.width, h=img.height;
+      if(w>maxSide||h>maxSide){const r=Math.min(maxSide/w,maxSide/h); w=Math.round(w*r); h=Math.round(h*r)}
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', quality));
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('خواندن تصویر ناموفق'))};
+    img.src=url;
+  });
+}
+
+$('#post-image-file').onchange=async e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f)return;
+  try{
+    pendingDataUrl=await readFileAsDataUrl(f);
+    const prev=$('#post-image-preview'); prev.src=pendingDataUrl; prev.style.display='block';
+  }catch(err){alert(err.message)}
+};
+$('#upload-post-image').onclick=async()=>{
+  if(!pendingDataUrl){alert('اول فایل تصویر را انتخاب کنید');return}
+  const r=await fetch('/api/media',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data_url:pendingDataUrl,filename:'post'})});
+  const d=await r.json();
+  if(!r.ok){alert(d.error||'آپلود ناموفق');return}
+  $('#image_url').value=d.url;
+  $('#save-message').textContent='تصویر آپلود شد و آدرس در فیلد قرار گرفت.';
+  loadMedia();
+};
+
+/* pages */
+function resetPageForm(){
+  editingPageId=null; $('#page-id').value=''; $('#page-form-title').textContent='صفحه جدید';
+  $('#page-form').reset(); $('#page-save-message').textContent='';
+}
+async function loadPages(){
+  try{
+    const r=await fetch('/api/pages',{cache:'no-store'}); const d=await r.json();
+    const box=$('#pages-list'); box.innerHTML='';
+    (d.pages||[]).forEach(p=>{
+      const el=document.createElement('div'); el.className='post-row';
+      el.innerHTML=`<div><span class="status ${p.status}">${p.status==='published'?'منتشر':'پیش‌نویس'}</span><strong>${esc(p.title)}</strong><small>${esc(p.slug)} · <a href="page.html?slug=${encodeURIComponent(p.slug)}" target="_blank">مشاهده</a></small></div><div class="row-actions"><button type="button" data-edit="${p.id}">ویرایش</button><button type="button" data-delete="${p.id}">حذف</button></div>`;
+      box.appendChild(el);
+    });
+    $$('#pages-list [data-edit]').forEach(b=>b.onclick=()=>editPage(b.dataset.edit));
+    $$('#pages-list [data-delete]').forEach(b=>b.onclick=()=>deletePage(b.dataset.delete));
+  }catch(e){}
+}
+async function editPage(id){
+  const r=await fetch('/api/pages?id='+id); const d=await r.json(); const p=d.page; if(!p)return;
+  editingPageId=id; $('#page-form-title').textContent='ویرایش صفحه';
+  $('#page-title').value=p.title; $('#page-slug').value=p.slug; $('#page-content').value=p.content||'';
+  $('#page-status').value=p.status||'published';
+}
+async function deletePage(id){
+  if(!confirm('صفحه حذف شود؟'))return;
+  const r=await fetch('/api/pages?id='+id,{method:'DELETE'}); if(r.ok)loadPages();
+}
+$('#page-form').onsubmit=async e=>{
+  e.preventDefault();
+  const payload={title:$('#page-title').value,slug:$('#page-slug').value,content:$('#page-content').value,status:$('#page-status').value};
+  const url=editingPageId?'/api/pages?id='+editingPageId:'/api/pages';
+  const r=await fetch(url,{method:editingPageId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const d=await r.json();
+  if(!r.ok){alert(d.error||'خطا');return}
+  $('#page-save-message').textContent='صفحه ذخیره شد.'+(d.slug?' آدرس: page.html?slug='+d.slug:'');
+  loadPages(); if(!editingPageId)resetPageForm();
+};
+$('#new-page').onclick=resetPageForm; $('#refresh-pages').onclick=loadPages;
+
+/* media */
+async function loadMedia(){
+  try{
+    const r=await fetch('/api/media',{cache:'no-store'}); if(!r.ok)return; const d=await r.json();
+    const box=$('#media-grid'); box.innerHTML='';
+    for(const m of (d.media||[])){
+      const full=await (await fetch('/api/media?id='+m.id)).json();
+      const src=(full.media&&full.media.data_url)||('/api/media-file?id='+m.id);
+      const el=document.createElement('div'); el.className='media-card';
+      el.innerHTML=`<img src="${src}" alt=""><small>${esc(m.filename)}</small><div class="row-actions" style="margin-top:6px"><button type="button" data-copy="${m.id}">کپی آدرس</button><button type="button" data-del="${m.id}">حذف</button></div>`;
+      box.appendChild(el);
+    }
+    $$('#media-grid [data-copy]').forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText('/api/media-file?id='+b.dataset.copy); alert('آدرس کپی شد')});
+    $$('#media-grid [data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('حذف؟'))return; await fetch('/api/media?id='+b.dataset.del,{method:'DELETE'}); loadMedia()});
+  }catch(e){}
+}
+$('#upload-media').onclick=async()=>{
+  const f=$('#media-file').files&&$('#media-file').files[0]; if(!f){alert('فایل انتخاب نشده');return}
+  try{
+    const data_url=await readFileAsDataUrl(f);
+    const r=await fetch('/api/media',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data_url,filename:f.name})});
+    const d=await r.json();
+    if(!r.ok){alert(d.error||'خطا');return}
+    $('#media-message').textContent='آپلود شد: '+d.url; loadMedia();
+  }catch(err){alert(err.message)}
+};
+
+/* settings */
+async function loadSettings(){
+  try{
+    const r=await fetch('/api/settings',{cache:'no-store'}); if(!r.ok)return; const d=await r.json();
+    const s=d.settings||{};
+    $('#bale_bot_token').value=s.bale_bot_token||'';
+    $('#bale_chat_id').value=s.bale_chat_id||'';
+    $('#telegram_bot_token').value=s.telegram_bot_token||'';
+    $('#telegram_chat_id').value=s.telegram_chat_id||'';
+    $('#instagram_note').value=s.instagram_note||s.eitaa_note||'';
+  }catch(e){}
+}
+$('#settings-form').onsubmit=async e=>{
+  e.preventDefault();
+  const payload={
+    bale_bot_token:$('#bale_bot_token').value.trim(),
+    bale_chat_id:$('#bale_chat_id').value.trim(),
+    telegram_bot_token:$('#telegram_bot_token').value.trim(),
+    telegram_chat_id:$('#telegram_chat_id').value.trim(),
+    instagram_note:$('#instagram_note').value.trim()
+  };
+  const r=await fetch('/api/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const d=await r.json();
+  if(!r.ok){alert(d.error||'خطا');return}
+  $('#settings-message').textContent='تنظیمات ذخیره شد.';
+};
+
+$('#login-form').onsubmit=async e=>{
+  e.preventDefault();
+  $('#login-error').textContent='';
+  try{
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('#login-password').value})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){showDash();loadPosts();loadPages();loadMedia();loadSettings()}
+    else $('#login-error').textContent=d.error||'ورود ناموفق بود.';
+  }catch(err){
+    $('#login-error').textContent='ارتباط با سرور برقرار نشد. VPN یا اینترنت دیگری را امتحان کنید.';
+  }
+};
+$('#post-form').onsubmit=e=>{e.preventDefault();save('published')};
+$('#save-draft').onclick=()=>save('draft');
+$('#new-post').onclick=resetForm;
+$('#refresh').onclick=loadPosts;
+$('#logout').onclick=async()=>{await fetch('/api/auth',{method:'DELETE'});location.reload()};
+boot();
+</script>
+</body>
+</html>

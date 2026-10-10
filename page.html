@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>صفحه | کافه بازنشستگی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="container head">
+    <a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span><strong>کافه بازنشستگی</strong><small>رسانه‌ای برای زندگی، تجربه و آینده بهتر</small></span></a>
+    <nav class="nav"><a href="index.html">خانه</a><a href="category.html">آخرین مطالب</a></nav>
+  </div>
+</header>
+<main class="article-page container" id="page-root">
+  <div class="panel"><p class="muted">در حال بارگذاری…</p></div>
+</main>
+<script>
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+(async()=>{
+  const root=document.getElementById('page-root');
+  const q=new URLSearchParams(location.search);
+  const id=q.get('id'); const slug=q.get('slug');
+  if(!id&&!slug){root.innerHTML='<div class="panel"><h1>صفحه پیدا نشد</h1></div>';return}
+  try{
+    const url=id?'/api/pages?id='+encodeURIComponent(id):'/api/pages?slug='+encodeURIComponent(slug);
+    const r=await fetch(url,{cache:'no-store'}); const d=await r.json();
+    if(!r.ok||!d.page){root.innerHTML='<div class="panel"><h1>صفحه پیدا نشد</h1><a class="more" href="index.html">بازگشت</a></div>';return}
+    const p=d.page; document.title=p.title+' | کافه بازنشستگی';
+    root.innerHTML=`<article class="panel article-body"><h1>${esc(p.title)}</h1><div class="content" style="white-space:pre-wrap;line-height:1.9">${esc(p.content||'')}</div></article>`;
+  }catch(e){root.innerHTML='<div class="panel"><h1>خطا در بارگذاری</h1></div>'}
+})();
+</script>
+</body>
+</html>

@@ -13,7 +13,7 @@ function fromB64u(s) {
   return Uint8Array.from(bin, c => c.charCodeAt(0));
 }
 async function sign(value, secret) {
-  const key = await crypto.subtle.importKey("raw", enc.encode(secret), {name:"HMAC", hash:"SHA-256"}, false, ["sign"]);
+  const key = await crypto.subtle.importKey("raw", enc.encode(secret || "fallback"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return b64u(new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(value))));
 }
 function getCookie(request, name) {
@@ -35,26 +35,34 @@ async function isAuthenticated(request, env) {
 }
 
 export async function onRequestGet(context) {
-  return Response.json({ authenticated: await isAuthenticated(context.request, context.env) });
+  try {
+    return Response.json({ authenticated: await isAuthenticated(context.request, context.env) });
+  } catch (e) {
+    return Response.json({ authenticated: false, error: String(e.message || e) }, { status: 500 });
+  }
 }
 
 export async function onRequestPost(context) {
-  const env = context.env;
-  if (!env.ADMIN_PASSWORD) return Response.json({error:"ADMIN_PASSWORD تنظیم نشده است."},{status:500});
-  let body = {};
-  try { body = await context.request.json(); } catch {}
-  if (body.password !== env.ADMIN_PASSWORD) return Response.json({error:"رمز عبور نادرست است."},{status:401});
-  const payload = b64uStr(JSON.stringify({exp: Date.now()+1000*60*60*24*7}));
-  const sig = await sign(payload, env.SESSION_SECRET || env.ADMIN_PASSWORD);
-  const headers = new Headers({"Content-Type":"application/json"});
-  headers.append("Set-Cookie", `kb_session=${encodeURIComponent(payload+"."+sig)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`);
-  return new Response(JSON.stringify({ok:true}), {status:200, headers});
+  try {
+    const env = context.env;
+    if (!env.ADMIN_PASSWORD) return Response.json({ error: "ADMIN_PASSWORD تنظیم نشده است." }, { status: 500 });
+    let body = {};
+    try { body = await context.request.json(); } catch {}
+    if (body.password !== env.ADMIN_PASSWORD) return Response.json({ error: "رمز عبور نادرست است." }, { status: 401 });
+    const payload = b64uStr(JSON.stringify({ exp: Date.now() + 1000 * 60 * 60 * 24 * 7 }));
+    const sig = await sign(payload, env.SESSION_SECRET || env.ADMIN_PASSWORD);
+    const headers = new Headers({ "Content-Type": "application/json" });
+    headers.append("Set-Cookie", `kb_session=${encodeURIComponent(payload + "." + sig)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`);
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
+  } catch (e) {
+    return Response.json({ error: String(e.message || e) }, { status: 500 });
+  }
 }
 
 export async function onRequestDelete() {
-  const headers = new Headers({"Content-Type":"application/json"});
-  headers.append("Set-Cookie","kb_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0");
-  return new Response(JSON.stringify({ok:true}),{headers});
+  const headers = new Headers({ "Content-Type": "application/json" });
+  headers.append("Set-Cookie", "kb_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0");
+  return new Response(JSON.stringify({ ok: true }), { headers });
 }
 
 export { isAuthenticated };
