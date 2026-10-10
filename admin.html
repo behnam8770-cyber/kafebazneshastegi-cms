@@ -1,0 +1,44 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>پنل مدیریت | کافه بازنشستگی</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body class="admin-page">
+<header><div class="container head"><a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span><strong>کافه بازنشستگی</strong><small>پنل مدیریت محتوا</small></span></a><div class="actions"><a class="btn secondary" href="index.html">مشاهده سایت</a></div></div></header>
+<main class="admin"><div class="container">
+<section id="login-box" class="panel auth-box"><span class="eyebrow">مدیریت سایت</span><h1>ورود به پنل انتشار</h1><p>برای مدیریت خبرها و مطالب، رمز مدیر را وارد کنید.</p><form id="login-form"><div class="field"><label>رمز عبور مدیر</label><input id="login-password" type="password" autocomplete="current-password" required></div><button class="btn primary" type="submit">ورود به پنل</button><div id="login-error" class="error"></div></form></section>
+<section id="dashboard" hidden>
+<div class="admin-top"><div><span class="eyebrow">اتاق خبر</span><h1>مدیریت محتوا</h1><p class="muted">مطلب را بنویسید، تصویر را معرفی کنید و با یک کلیک منتشر کنید.</p></div><div class="buttons"><button id="new-post" class="btn secondary">+ مطلب جدید</button><button id="logout" class="btn secondary">خروج</button></div></div>
+<div class="admin-grid">
+<section class="panel"><h2 id="form-title">مطلب جدید</h2><form id="post-form">
+<input type="hidden" id="post-id">
+<div class="field"><label>عنوان مطلب *</label><input id="title" required placeholder="عنوان خبر یا مقاله"></div>
+<div class="two"><div class="field"><label>دسته‌بندی</label><select id="category"><option>خبر</option><option>اقتصاد</option><option>سلامت</option><option>فناوری</option><option>زندگی</option><option>تجربه‌ها</option><option>فرهنگ</option><option>خانواده</option><option>عمومی</option></select></div><div class="field"><label>نویسنده</label><input id="author" value="کافه بازنشستگی"></div></div>
+<div class="field"><label>خلاصه / لید</label><textarea id="excerpt" rows="4" placeholder="خلاصه‌ای کوتاه برای صفحه اصلی و شبکه‌های اجتماعی"></textarea></div>
+<div class="field"><label>متن کامل مطلب</label><textarea id="content" rows="14" placeholder="متن کامل مطلب را اینجا وارد کنید..."></textarea></div>
+<div class="field"><label>آدرس تصویر اصلی</label><input id="image_url" placeholder="https://.../image.jpg"><small class="hint">در این نسخه تصویر با URL ذخیره می‌شود؛ در مرحله بعد می‌توانیم آپلود مستقیم تصویر را با R2 اضافه کنیم.</small></div>
+<div class="buttons"><button class="btn primary" type="submit" data-status="published">ذخیره و انتشار</button><button class="btn secondary" type="button" id="save-draft">ذخیره پیش‌نویس</button></div>
+<div id="save-message" class="success"></div></form></section>
+<aside class="panel"><div class="list-head"><h2>مطالب</h2><button id="refresh" class="btn secondary">بازخوانی</button></div><div id="posts-list" class="posts-list"></div></aside>
+</div></section></div></main>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let editingId=null;
+const faDate=s=>s?new Date(s).toLocaleDateString('fa-IR'):'—';
+function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+async function auth(){const r=await fetch('/api/auth',{cache:'no-store'});return (await r.json()).authenticated}
+async function boot(){if(await auth()){showDash();loadPosts()}else{$('#login-box').hidden=false}}
+function showDash(){$('#login-box').hidden=true;$('#dashboard').hidden=false}
+function resetForm(){editingId=null;$('#post-id').value='';$('#form-title').textContent='مطلب جدید';$('#post-form').reset();$('#author').value='کافه بازنشستگی';$('#save-message').textContent=''}
+async function loadPosts(){
+ const r=await fetch('/api/posts?admin=1&limit=100',{cache:'no-store'}); if(r.status===401){location.reload();return}
+ const data=await r.json(); const box=$('#posts-list'); box.innerHTML='';
+ (data.posts||[]).forEach(p=>{const el=document.createElement('div');el.className='post-row';el.innerHTML=`<div><span class="status ${p.status}">${p.status==='published'?'منتشرشده':'پیش‌نویس'}</span><strong>${esc(p.title)}</strong><small>${esc(p.category)} · ${faDate(p.updated_at)}</small></div><div class="row-actions"><button data-edit="${p.id}">ویرایش</button><button data-delete="${p.id}">حذف</button></div>`;box.appendChild(el)})
+ $$('#posts-list [data-edit]').forEach(b=>b.onclick=()=>editPost(b.dataset.edit));
+ $$('#posts-list [data-delete]').forEach(b=>b.onclick=()=>deletePost(b.dataset.delete));
+}
+async function editPost(id){const r=await fetch('/api/posts?id='+encodeURIComponent(id));const d=await r.json();const p=d.post;if(!p)return;editingId=id;$('#form-title').textContent='ویرایش مطلب';$('#title').value=p.title;$('#category').value=p.category;$('#author').value=p.author;$('#excerpt').value=p.excerpt;$('#content').value=p.content;$('#image_url').value=p.image_url||'';$('#save-message').textContent='';scrollTo({top:0,behavior:'smooth'})}
+async function deletePost(id){if(!confirm('این مطلب حذف شود؟'))return;const r=await fetch('/api/posts?id='+id,{method:'DELETE'});if(r.ok)loadPosts();else alert((await r.json()).error||'خطا')}
+async function save(status){const payload={title:$('#title').value,category:$('#category').value,author:$('#author').value,excerpt:$('#excerpt').value,content:$('#content').value,image_url:$('#image_url').value,status};
+ const url=editingId?'/api/posts?id='+editingId:'/api/posts';const r=await fetch(url,{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok){alert(d.error||'خطا در ذخیره');return}
+ $('#save-message').textContent=status==='published'?'مطلب با موفقیت منتشر شد.':'پیش‌نویس ذخیره شد.';loadPosts();if(!editingId)resetForm();
+}
+$('#login-form').onsubmit=async e=>{e.preventDefault();const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('#login-password').value})});if(r.ok){showDash();loadPosts()}else $('#login-error').textContent=(await r.json()).error||'ورود ناموفق بود.'}
+$('#post-form').onsubmit=e=>{e.preventDefault();save('published')};$('#save-draft').onclick=()=>save('draft');$('#new-post').onclick=resetForm;$('#refresh').onclick=loadPosts;
+$('#logout').onclick=async()=>{await fetch('/api/auth',{method:'DELETE'});location.reload()};boot();
+</script></body></html>
